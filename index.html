@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bizeal Salary Tracker</title>
+<style>
+:root{
+  --font-sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --color-text-primary:#202124;
+  --color-text-secondary:#5f6368;
+  --color-text-tertiary:#80868b;
+  --color-background-primary:#fff;
+  --color-background-secondary:#f6f7f4;
+  --color-border-tertiary:#dedfd8;
+  --color-border-secondary:#c8cac0;
+  --border-radius-md:8px;
+  --border-radius-lg:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+#app{font-family:var(--font-sans);min-height:500px;background:linear-gradient(180deg,#fff 0%,#fbfaf7 100%);color:var(--color-text-primary)}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:0.5px solid var(--color-border-tertiary);position:sticky;top:0;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);z-index:5}
+.brand{display:flex;align-items:center;gap:9px;min-width:0}
+.mark{width:28px;height:28px;border-radius:8px;background:#BA7517;color:white;display:grid;place-items:center;font-weight:700;font-size:13px}
+.logo{font-size:15px;font-weight:700;color:var(--color-text-primary);white-space:nowrap}
+.logo em{font-style:normal;color:#BA7517}
+.sub{font-size:11px;color:var(--color-text-tertiary);margin-top:1px;white-space:nowrap}
+.nav{display:flex;gap:4px;overflow:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nb{padding:7px 11px;border:0.5px solid transparent;border-radius:var(--border-radius-md);background:transparent;cursor:pointer;font-size:12px;color:var(--color-text-secondary);white-space:nowrap;transition:.16s ease}
+.nb:hover{background:#F7EFE3;color:#854F0B}
+.nb.on{background:#F7EFE3;color:#854F0B;border-color:#E4C796}
+.main{padding:16px;max-width:1100px;margin:0 auto}
+.toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.mn{display:flex;align-items:center;gap:8px}
+.ml{font-size:14px;font-weight:700;color:var(--color-text-primary);min-width:132px;text-align:center}
+.btm,.iconbtn{width:34px;height:32px;display:grid;place-items:center;font-size:15px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);background:white;cursor:pointer;color:var(--color-text-secondary);transition:.16s ease}
+.btm:hover,.iconbtn:hover{border-color:#BA7517;color:#854F0B;background:#fff9ef}
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));gap:10px;margin-bottom:14px}
+.sc{background:white;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;box-shadow:0 8px 20px rgba(32,33,36,.04)}
+.sc:hover{border-color:#E4C796}
+.sl{font-size:10px;color:var(--color-text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.sv{font-size:22px;font-weight:700;color:var(--color-text-primary);line-height:1.1}
+.ss{font-size:11px;color:var(--color-text-tertiary);margin-top:4px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:12px;box-shadow:0 10px 28px rgba(32,33,36,.05)}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.ct{font-size:11px;font-weight:700;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em}
+.er{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:0.5px solid var(--color-border-tertiary);gap:10px}
+.er:last-child{border-bottom:none}
+.en{font-size:14px;font-weight:700;color:var(--color-text-primary)}
+.ei{font-size:12px;color:var(--color-text-secondary);margin-top:2px;line-height:1.4}
+.meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:5px}
+.badge,.tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.bp{background:#EAF3DE;color:#3B6D11}
+.bx{background:#FAEEDA;color:#854F0B}
+.bu{background:#FCEBEB;color:#A32D2D}
+.ba{background:#E6F1FB;color:#185FA5}
+.bl{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.tag{background:var(--color-background-secondary);color:var(--color-text-secondary);font-weight:600}
+.progress{height:7px;border-radius:999px;background:#EEEDE7;overflow:hidden;margin-top:8px}
+.bar{height:100%;border-radius:999px;background:#BA7517;transition:width .25s ease}
+.bar.ok{background:#3B6D11}.bar.warn{background:#BA7517}.bar.bad{background:#A32D2D}
+.fr{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.fl{font-size:12px;color:var(--color-text-secondary);font-weight:600}
+.fr input,.fr select,.search,textarea{width:100%;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:9px 10px;background:white;color:var(--color-text-primary);font:inherit;font-size:13px;outline:none}
+.fr input:focus,.fr select:focus,.search:focus,textarea:focus{border-color:#BA7517;box-shadow:0 0 0 3px rgba(186,117,23,.12)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.btn{background:#BA7517;color:white;border:none;border-radius:var(--border-radius-md);padding:9px 14px;cursor:pointer;font-size:13px;font-weight:700;min-height:34px;transition:.16s ease}
+.btn:hover{background:#854F0B;transform:translateY(-1px)}
+.btn.secondary{background:white;color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary)}
+.btn.secondary:hover{background:#fff9ef;color:#854F0B;border-color:#E4C796}
+.btn.full{width:100%}
+.bts{padding:7px 11px;font-size:12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:white;cursor:pointer;color:var(--color-text-primary);font-weight:600;transition:.16s ease}
+.bts:hover{background:#fff9ef;border-color:#E4C796;color:#854F0B}
+.danger{color:#A32D2D}
+.danger:hover{background:#FCEBEB;border-color:#F2B8B5;color:#A32D2D}
+.ph{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px;margin-top:10px}
+.pr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;font-size:12px;border-bottom:0.5px solid var(--color-border-tertiary);gap:10px}
+.pr:last-child{border-bottom:none}
+.empty{text-align:center;padding:28px;color:var(--color-text-secondary);font-size:13px}
+.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:14px 0}
+.split{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#202124;color:white;padding:9px 14px;border-radius:999px;font-size:12px;box-shadow:0 12px 28px rgba(32,33,36,.24);z-index:20}
+.hidden{display:none}
+.hint{color:var(--color-text-secondary);font-size:12px;line-height:1.45;margin-top:10px}
+@media(max-width:720px){
+  .hdr{align-items:flex-start;flex-direction:column}
+  .nav{width:100%}
+  .main{padding:12px}
+  .g2,.g3,.split{grid-template-columns:1fr}
+  .er{align-items:flex-start;flex-direction:column}
+  .er .row-actions{width:100%;justify-content:flex-end}
+  .sv{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<div id="app"><div style="padding:24px;text-align:center;color:var(--color-text-secondary)">Loading...</div></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const LOCS = ['Shop 1','Shop 2','Shop 3','Kitchen'];
+const PTYPES = ['Advance','Partial','Full Salary'];
+const STORAGE_KEYS = { employees: 'bz_emp', payments: 'bz_pay' };
+
+let DB = { employees: [], payments: [] };
+let S = { tab: 'dashboard', month: monthKey(new Date()), selEmp: null, showAddEmp: false, q: '', loc: 'All', payStatus: 'All' };
+
+function monthKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+function fmtMonth(k){ const [y,m]=k.split('-'); return new Date(y,m-1).toLocaleString('en-IN',{month:'long',year:'numeric'}); }
+function fmtINR(n){ return '₹'+Number(n||0).toLocaleString('en-IN'); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
+function esc(v){ return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function pct(n,d){ return d>0 ? Math.min(100, Math.round((n/d)*100)) : 0; }
+function todayISO(){ return new Date().toISOString().split('T')[0]; }
+function shiftMonth(month, offset){ const [y,m]=month.split('-').map(Number); return monthKey(new Date(y,m-1+offset,1)); }
+
+async function storageGet(key){
+  try{ if(window.storage){ const r=await window.storage.get(key); if(r?.value) return r.value; } }catch(e){}
+  return localStorage.getItem(key);
+}
+async function storageSet(key,value){
+  localStorage.setItem(key,value);
+  try{ if(window.storage) await window.storage.set(key,value); }catch(e){}
+}
+
+async function load(){
+  try{ DB.employees=JSON.parse(await storageGet(STORAGE_KEYS.employees) || '[]'); }catch(e){ DB.employees=[]; }
+  try{ DB.payments=JSON.parse(await storageGet(STORAGE_KEYS.payments) || '[]'); }catch(e){ DB.payments=[]; }
+  render();
+}
+async function saveEmp(){ await storageSet(STORAGE_KEYS.employees,JSON.stringify(DB.employees)); }
+async function savePay(){ await storageSet(STORAGE_KEYS.payments,JSON.stringify(DB.payments)); }
+async function saveAll(){ await saveEmp(); await savePay(); }
+
+function empSummary(eid, month){
+  const emp = DB.employees.find(e=>e.id===eid); if(!emp) return null;
+  const currentPayments = DB.payments.filter(p=>p.employeeId===eid && p.month===month);
+
+  // Advance rule: an Advance paid in one month is deducted from the next month's salary.
+  // Example: a ₹2,000 Advance recorded in May appears as already paid/deducted in June.
+  const salaryPayments = currentPayments.filter(p=>p.type!=='Advance');
+  const advancesToNextMonth = currentPayments.filter(p=>p.type==='Advance');
+  const carriedAdvances = DB.payments
+    .filter(p=>p.employeeId===eid && p.type==='Advance' && shiftMonth(p.month,1)===month)
+    .map(p=>({...p, carriedFrom:p.month}));
+
+  const ps = [...salaryPayments, ...advancesToNextMonth, ...carriedAdvances].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  const paidThisMonth = salaryPayments.reduce((s,p)=>s+Number(p.amount||0),0);
+  const advanceApplied = carriedAdvances.reduce((s,p)=>s+Number(p.amount||0),0);
+  const advanceToNext = advancesToNextMonth.reduce((s,p)=>s+Number(p.amount||0),0);
+  const totalPaid = paidThisMonth + advanceApplied;
+  const remaining = Math.max(0, Number(emp.salary||0) - totalPaid);
+  const status = totalPaid===0 ? 'unpaid' : totalPaid>=Number(emp.salary||0) ? 'paid' : 'partial';
+  return { totalPaid, paidThisMonth, advanceApplied, advanceToNext, remaining, status, ps, percent: pct(totalPaid, Number(emp.salary||0)) };
+}
+
+function filteredEmployees(){
+  const q = S.q.trim().toLowerCase();
+  return DB.employees.filter(e=>{
+    const sum = empSummary(e.id,S.month);
+    const matchesQ = !q || [e.name,e.role,e.location,e.mobile,e.address,e.joiningDate].some(v=>String(v||'').toLowerCase().includes(q));
+    const matchesLoc = S.loc==='All' || e.location===S.loc;
+    const matchesStatus = S.payStatus==='All' || sum?.status===S.payStatus;
+    return matchesQ && matchesLoc && matchesStatus;
+  });
+}
+
+function monthStats(){
+  const emps = DB.employees;
+  const paid = emps.filter(e=>empSummary(e.id,S.month)?.status==='paid').length;
+  const partial = emps.filter(e=>empSummary(e.id,S.month)?.status==='partial').length;
+  const unpaid = emps.filter(e=>empSummary(e.id,S.month)?.status==='unpaid').length;
+  const totalPayroll = emps.reduce((s,e)=>s+Number(e.salary||0),0);
+  const totalPaid = emps.reduce((s,e)=>s+(empSummary(e.id,S.month)?.totalPaid||0),0);
+  return { emps, paid, partial, unpaid, totalPayroll, totalPaid, pending: Math.max(0,totalPayroll-totalPaid), progress: pct(totalPaid,totalPayroll) };
+}
+
+function prevMonth(){ const [y,m]=S.month.split('-').map(Number); S.month=monthKey(new Date(y,m-2,1)); render(); }
+function nextMonth(){ const [y,m]=S.month.split('-').map(Number); S.month=monthKey(new Date(y,m,1)); render(); }
+function setTab(t){ S.tab=t; S.showAddEmp=false; if(t!=='payments') S.selEmp=null; render(); }
+function setFilter(k,v){ S[k]=v; render(); }
+
+function render(){
+  const tabs = [
+    {id:'dashboard',icon:'ti-layout-dashboard',label:'Dashboard'},
+    {id:'employees',icon:'ti-users',label:'Employees'},
+    {id:'payments',icon:'ti-cash',label:'Record Pay'},
+    {id:'tools',icon:'ti-table-export',label:'Backup & Sheets'},
+  ];
+  const navHtml = tabs.map(t=>`<button class="nb${S.tab===t.id?' on':''}" onclick="setTab('${t.id}')"><i class="ti ${t.icon}" aria-hidden="true" style="margin-right:4px"></i>${t.label}</button>`).join('');
+  const content = S.tab==='dashboard' ? renderDashboard() : S.tab==='employees' ? renderEmployees() : S.tab==='payments' ? renderPayments() : renderTools();
+
+  $('app').innerHTML = `
+    <div class="hdr">
+      <div class="brand">
+        <div class="mark">BZ</div>
+        <div><div class="logo"><em>Bizeal</em> Salary Tracker</div><div class="sub">Local file tracker with Sheets export</div></div>
+      </div>
+      <nav class="nav">${navHtml}</nav>
+    </div>
+    <div class="main">${content}</div>
+  `;
+  bindAll();
+}
+
+function renderMonthToolbar(extra=''){
+  return `
+    <div class="toolbar">
+      <div class="mn">
+        <button class="btm" onclick="prevMonth()" title="Previous month"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>
+        <span class="ml">${fmtMonth(S.month)}</span>
+        <button class="btm" onclick="nextMonth()" title="Next month"><i class="ti ti-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <div class="actions">${extra}</div>
+    </div>`;
+}
+
+function renderFilters(){
+  return `
+    <div class="toolbar">
+      <input class="search" style="max-width:320px" value="${esc(S.q)}" placeholder="Search staff, role, location" oninput="setFilter('q',this.value)">
+      <div class="actions">
+        <select class="search" style="width:auto" onchange="setFilter('loc',this.value)">
+          ${['All',...LOCS].map(l=>`<option${S.loc===l?' selected':''}>${l}</option>`).join('')}
+        </select>
+        <select class="search" style="width:auto" onchange="setFilter('payStatus',this.value)">
+          ${[['All','All status'],['paid','Paid'],['partial','Partial'],['unpaid','Unpaid']].map(([v,l])=>`<option value="${v}"${S.payStatus===v?' selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>
+    </div>`;
+}
+
+function renderDashboard(){
+  const st = monthStats();
+  const empRows = renderEmployeeRows(filteredEmployees(), true);
+  return `
+    ${renderMonthToolbar(`<button class="bts" onclick="downloadMonthlyCSV()">Export CSV</button><button class="btn secondary" onclick="setTab('payments')">Record Pay</button>`)}
+    <div class="sg">
+      <div class="sc"><div class="sl">Total Staff</div><div class="sv">${st.emps.length}</div><div class="ss">across all locations</div></div>
+      <div class="sc"><div class="sl">Fully Paid</div><div class="sv" style="color:#3B6D11">${st.paid}</div><div class="ss">salary complete</div></div>
+      <div class="sc"><div class="sl">Partial</div><div class="sv" style="color:#854F0B">${st.partial}</div><div class="ss">balance remaining</div></div>
+      <div class="sc"><div class="sl">Unpaid</div><div class="sv" style="color:#A32D2D">${st.unpaid}</div><div class="ss">not started</div></div>
+    </div>
+    <div class="sg">
+      <div class="sc"><div class="sl">Total Payroll</div><div class="sv">${fmtINR(st.totalPayroll)}</div></div>
+      <div class="sc"><div class="sl">Paid / Deducted</div><div class="sv" style="color:#3B6D11">${fmtINR(st.totalPaid)}</div></div>
+      <div class="sc"><div class="sl">Pending</div><div class="sv" style="color:#A32D2D">${fmtINR(st.pending)}</div></div>
+      <div class="sc"><div class="sl">Month Progress</div><div class="sv">${st.progress}%</div><div class="progress"><div class="bar ${st.progress>=100?'ok':'warn'}" style="width:${st.progress}%"></div></div></div>
+    </div>
+    ${renderFilters()}
+    <div class="card">
+      <div class="card-head"><div class="ct"><i class="ti ti-users" aria-hidden="true" style="margin-right:5px"></i>All Employees - ${fmtMonth(S.month)}</div><span class="tag">${filteredEmployees().length} shown</span></div>
+      ${empRows}
+    </div>`;
+}
+
+function renderEmployeeRows(emps, showPay){
+  if(DB.employees.length===0) return `<div class="empty"><i class="ti ti-user-off" style="font-size:24px;margin-bottom:8px;display:block" aria-hidden="true"></i>No employees yet. Add from the Employees tab.</div>`;
+  if(emps.length===0) return `<div class="empty">No matching employees for these filters.</div>`;
+  return emps.map(e=>{
+    const sum = empSummary(e.id, S.month);
+    const badgeCls = sum.status==='paid'?'bp':sum.status==='partial'?'bx':'bu';
+    const badgeTxt = sum.status==='paid'?'Paid':sum.status==='partial'?'Partial':'Unpaid';
+    const barCls = sum.status==='paid'?'ok':sum.status==='partial'?'warn':'bad';
+    return `<div class="er">
+      <div style="flex:1;min-width:0">
+        <div class="en">${esc(e.name)}</div>
+        <div class="ei">${esc(e.role||'No role')}</div>
+        ${(e.mobile || e.address || e.joiningDate) ? `<div class="ei">${e.mobile ? `<i class="ti ti-phone" aria-hidden="true" style="margin-right:3px"></i>${esc(e.mobile)}` : ''}${e.mobile && (e.address || e.joiningDate) ? ' &nbsp;·&nbsp; ' : ''}${e.address ? `<i class="ti ti-map-pin" aria-hidden="true" style="margin-right:3px"></i>${esc(e.address)}` : ''}${e.address && e.joiningDate ? ' &nbsp;·&nbsp; ' : ''}${e.joiningDate ? `<i class="ti ti-calendar" aria-hidden="true" style="margin-right:3px"></i>Joined ${esc(e.joiningDate)}` : ''}</div>` : ''}
+        <div class="meta"><span class="tag">${esc(e.location)}</span><span class="tag">${fmtINR(e.salary)}/mo</span><span class="badge ${badgeCls}">${badgeTxt}</span></div>
+        <div class="progress"><div class="bar ${barCls}" style="width:${sum.percent}%"></div></div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;min-width:118px">
+        <div style="font-size:13px;font-weight:700;color:var(--color-text-primary)">${fmtINR(sum.totalPaid)} paid/deducted</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px">${fmtINR(sum.remaining)} left</div>
+      </div>
+      <div class="row-actions" style="display:flex;gap:7px;flex-shrink:0">
+        ${showPay ? `<button class="bts" data-pay="${e.id}">Pay</button><button class="bts" data-edit="${e.id}">Edit</button>` : ''}
+        ${!showPay ? `<button class="bts" data-edit="${e.id}">Edit</button><button class="bts danger" data-del="${e.id}"><i class="ti ti-trash" aria-hidden="true"></i></button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderEmployees(){
+  const addForm = S.showAddEmp ? `
+    <div class="card">
+      <div class="ct">Add New Employee</div>
+      <div class="g2">
+        <div class="fr"><label class="fl">Full Name *</label><input id="e-name" type="text" placeholder="e.g. Ramesh Kumar"></div>
+        <div class="fr"><label class="fl">Mobile Number</label><input id="e-mobile" type="tel" placeholder="e.g. 9876543210"></div>
+      </div>
+      <div class="g2">
+        <div class="fr"><label class="fl">Role</label><input id="e-role" type="text" placeholder="e.g. Baker, Cashier"></div>
+        <div class="fr"><label class="fl">Location *</label><select id="e-loc">${LOCS.map(l=>`<option>${l}</option>`).join('')}</select></div>
+      </div>
+      <div class="g2">
+        <div class="fr"><label class="fl">Monthly Salary (₹) *</label><input id="e-sal" type="number" min="1" placeholder="e.g. 12000"></div>
+        <div class="fr"><label class="fl">Joining Date</label><input id="e-joining" type="date"></div>
+      </div>
+      <div class="fr"><label class="fl">Address</label><input id="e-address" type="text" placeholder="Employee address"></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn full" onclick="addEmployee()" style="flex:1">Add Employee</button>
+        <button class="bts" onclick="S.showAddEmp=false;render()" style="flex:0 0 auto">Cancel</button>
+      </div>
+    </div>` : `<div class="toolbar"><button class="btn secondary" onclick="S.showAddEmp=true;render()"><i class="ti ti-plus" aria-hidden="true" style="margin-right:4px"></i>Add Employee</button><button class="bts" onclick="downloadBackup()">Save Backup</button></div>`;
+
+  const byLoc = {};
+  LOCS.forEach(l=>{ byLoc[l]=DB.employees.filter(e=>e.location===l); });
+  const sections = LOCS.map(loc=>{
+    const rows = renderEmployeeRows(byLoc[loc], false);
+    if(!byLoc[loc].length) return '';
+    return `<div class="card"><div class="card-head"><div class="ct"><i class="ti ti-building-store" aria-hidden="true" style="margin-right:5px"></i>${loc}</div><span class="tag">${byLoc[loc].length} staff</span></div>${rows}</div>`;
+  }).join('');
+  const empty = DB.employees.length===0 ? `<div class="card"><div class="empty"><i class="ti ti-user-plus" style="font-size:24px;margin-bottom:8px;display:block" aria-hidden="true"></i>Add your first employee above</div></div>` : '';
+  return `${addForm}${sections}${empty}`;
+}
+
+function renderPayments(){
+  const empOpts = DB.employees.map(e=>`<option value="${e.id}"${S.selEmp===e.id?' selected':''}>${esc(e.name)} - ${esc(e.location)}</option>`).join('');
+  const selEmpObj = DB.employees.find(e=>e.id===S.selEmp);
+  let balSection = '';
+  let histSection = '';
+  let empInfo = '';
+
+  if(selEmpObj){
+    const sum = empSummary(selEmpObj.id, S.month);
+    const badgeCls = sum.status==='paid'?'bp':sum.status==='partial'?'bx':'bu';
+    const badgeTxt = sum.status==='paid'?'Fully Paid':sum.status==='partial'?'Partial':'Not Paid';
+    empInfo = (selEmpObj.mobile || selEmpObj.address || selEmpObj.joiningDate) ? `
+      <div class="ph" style="margin-top:0;margin-bottom:12px">
+        ${selEmpObj.mobile ? `<div class="pr"><span>Mobile</span><strong>${esc(selEmpObj.mobile)}</strong></div>` : ''}
+        ${selEmpObj.joiningDate ? `<div class="pr"><span>Joining Date</span><strong>${esc(selEmpObj.joiningDate)}</strong></div>` : ''}
+        ${selEmpObj.address ? `<div class="pr"><span>Address</span><strong style="text-align:right">${esc(selEmpObj.address)}</strong></div>` : ''}
+      </div>` : '';
+    balSection = `
+      <div class="g3" style="margin-bottom:10px">
+        <div class="sc"><div class="sl">Salary</div><div class="sv">${fmtINR(selEmpObj.salary)}</div></div>
+        <div class="sc"><div class="sl">Paid / Deducted</div><div class="sv" style="color:#3B6D11">${fmtINR(sum.totalPaid)}</div></div>
+        <div class="sc"><div class="sl">Remaining</div><div class="sv" style="color:${sum.remaining>0?'#A32D2D':'#3B6D11'}">${fmtINR(sum.remaining)}</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span class="badge ${badgeCls}">${badgeTxt}</span><div class="progress" style="flex:1;margin-top:0"><div class="bar ${sum.status==='paid'?'ok':'warn'}" style="width:${sum.percent}%"></div></div><span class="tag">${sum.percent}%</span></div>
+      ${(sum.advanceApplied || sum.advanceToNext) ? `<div class="hint" style="margin-top:-4px;margin-bottom:12px">${sum.advanceApplied ? `${fmtINR(sum.advanceApplied)} advance from previous month is deducted here. ` : ''}${sum.advanceToNext ? `${fmtINR(sum.advanceToNext)} advance recorded this month will deduct from ${fmtMonth(shiftMonth(S.month,1))}.` : ''}</div>` : ''}`;
+
+    if(sum.ps.length>0){
+      const rows = sum.ps.map(p=>`
+        <div class="pr">
+          <div>
+            <span class="badge ${p.type==='Advance'?'ba':p.type==='Full Salary'?'bp':'bx'}" style="font-size:10px">${esc(p.carriedFrom ? `Advance from ${fmtMonth(p.carriedFrom)}` : p.type==='Advance' ? `Advance to ${fmtMonth(shiftMonth(p.month,1))}` : p.type)}</span>
+            <span style="margin-left:6px;color:var(--color-text-secondary)">${esc(p.date)}</span>
+            ${p.note?`<div style="color:var(--color-text-tertiary);font-size:11px;margin-top:2px">${esc(p.note)}</div>`:''}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-weight:700;color:var(--color-text-primary)">${fmtINR(p.amount)}</span>
+            ${p.carriedFrom
+              ? `<span class="tag" title="Edit this advance in ${fmtMonth(p.carriedFrom)}">Read only</span>`
+              : `<button class="bts" style="padding:3px 7px" data-editpay="${p.id}" title="Edit payment">Edit</button>
+                 <button class="bts danger" style="padding:3px 7px" data-delpay="${p.id}" title="Delete payment"><i class="ti ti-x" aria-hidden="true" style="font-size:11px"></i></button>`}
+          </div>
+        </div>`).join('');
+      histSection = `<div class="ct" style="margin-bottom:6px">Payment History - ${fmtMonth(S.month)}</div><div class="ph">${rows}</div><hr class="divider">`;
+    }
+  }
+
+  return `
+    ${renderMonthToolbar(selEmpObj ? `<button class="bts" onclick="editEmployee('${selEmpObj.id}')">Edit Employee</button><button class="bts" onclick="fillRemaining()">Fill Remaining</button><button class="bts" onclick="recordFullSalary()">Full Salary</button>` : '')}
+    <div class="card">
+      <div class="ct"><i class="ti ti-cash" aria-hidden="true" style="margin-right:5px"></i>Record a Payment</div>
+      <div class="fr"><label class="fl">Select Employee *</label><select id="p-emp" onchange="S.selEmp=this.value;render()"><option value="">Choose employee</option>${empOpts}</select></div>
+      ${empInfo}
+      ${balSection}
+      ${histSection}
+      ${selEmpObj ? `
+      <div class="g2">
+        <div class="fr"><label class="fl">Amount (₹) *</label><input id="p-amt" type="number" min="1" placeholder="Enter amount"></div>
+        <div class="fr"><label class="fl">Payment Type *</label><select id="p-type">${PTYPES.map(t=>`<option>${t}</option>`).join('')}</select></div>
+      </div>
+      <div class="g2">
+        <div class="fr"><label class="fl">Date *</label><input id="p-date" type="date" value="${todayISO()}"></div>
+        <div class="fr"><label class="fl">Note</label><input id="p-note" type="text" placeholder="e.g. Advance for festival"></div>
+      </div>
+      <button class="btn full" onclick="recordPayment()"><i class="ti ti-check" aria-hidden="true" style="margin-right:5px"></i>Record Payment</button>` : `<div class="empty" style="padding:16px">Select an employee to record payment</div>`}
+    </div>`;
+}
+
+function renderTools(){
+  const st = monthStats();
+  return `
+    ${renderMonthToolbar(`<button class="btn secondary" onclick="downloadMonthlyCSV()">Download Sheet CSV</button>`)}
+    <div class="split">
+      <div class="card">
+        <div class="ct">Google Sheets</div>
+        <div class="g2">
+          <button class="btn full" onclick="openGoogleSheetWithData()">Open New Google Sheet</button>
+          <button class="btn secondary full" onclick="downloadMonthlyCSV()">Download CSV File</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="bts" onclick="copyMonthlyCSV()">Copy Sheet Data</button>
+          <button class="bts" onclick="window.open('https://sheets.google.com','_blank')">Open Sheets Home</button>
+        </div>
+        <div class="hint">Click Open New Google Sheet, then paste in cell A1. Browser security does not allow a local HTML file to write directly into your Google account without Google authorization.</div>
+        <div class="ph">
+          <div class="pr"><span>Rows ready</span><strong>${DB.employees.length}</strong></div>
+          <div class="pr"><span>Month</span><strong>${fmtMonth(S.month)}</strong></div>
+          <div class="pr"><span>Total paid</span><strong>${fmtINR(st.totalPaid)}</strong></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">Local Backup</div>
+        <div class="g2">
+          <button class="btn secondary full" onclick="downloadBackup()">Save JSON Backup</button>
+          <label class="btn secondary full" style="text-align:center;display:block">
+            Import Backup
+            <input id="backup-file" class="hidden" type="file" accept="application/json,.json" onchange="importBackup(this.files[0])">
+          </label>
+        </div>
+        <hr class="divider">
+        <button class="bts danger" onclick="clearAllData()">Clear Local Data</button>
+      </div>
+    </div>`;
+}
+
+function bindAll(){
+  document.querySelectorAll('[data-pay]').forEach(b=>b.addEventListener('click',()=>{ S.tab='payments'; S.selEmp=b.dataset.pay; render(); }));
+  document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editEmployee(b.dataset.edit)));
+  document.querySelectorAll('[data-editpay]').forEach(b=>b.addEventListener('click',()=>editPayment(b.dataset.editpay)));
+  document.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{
+    if(confirm('Remove this employee? Their payment records will also be removed.')){
+      DB.employees=DB.employees.filter(e=>e.id!==b.dataset.del);
+      DB.payments=DB.payments.filter(p=>p.employeeId!==b.dataset.del);
+      await saveAll(); render(); toast('Employee removed');
+    }
+  }));
+  document.querySelectorAll('[data-delpay]').forEach(b=>b.addEventListener('click',async()=>{
+    if(confirm('Delete this payment?')){
+      DB.payments=DB.payments.filter(p=>p.id!==b.dataset.delpay);
+      await savePay(); render(); toast('Payment deleted');
+    }
+  }));
+}
+
+async function addEmployee(){
+  const name=($('e-name')||{}).value?.trim();
+  const role=($('e-role')||{}).value?.trim();
+  const mobile=($('e-mobile')||{}).value?.trim();
+  const address=($('e-address')||{}).value?.trim();
+  const joiningDate=($('e-joining')||{}).value;
+  const loc=($('e-loc')||{}).value;
+  const sal=parseFloat(($('e-sal')||{}).value);
+  if(!name||!sal||sal<=0){ alert('Please fill Name and a valid Salary.'); return; }
+  DB.employees.push({id:uid(),name,role:role||'',mobile:mobile||'',address:address||'',joiningDate:joiningDate||'',location:loc,salary:sal});
+  await saveEmp();
+  S.showAddEmp=false;
+  render();
+  toast('Employee added');
+}
+
+async function editEmployee(id){
+  const emp = DB.employees.find(e=>e.id===id); if(!emp) return;
+  const name = prompt('Employee name', emp.name); if(name===null) return;
+  const role = prompt('Role', emp.role || '') ?? emp.role;
+  const mobile = prompt('Mobile number', emp.mobile || '') ?? emp.mobile;
+  const address = prompt('Address', emp.address || '') ?? emp.address;
+  const joiningDate = prompt('Joining date (YYYY-MM-DD)', emp.joiningDate || '') ?? emp.joiningDate;
+  const loc = prompt(`Location (${LOCS.join(', ')})`, emp.location) ?? emp.location;
+  const salary = parseFloat(prompt('Monthly salary', emp.salary));
+  if(!name.trim() || !salary || salary<=0){ alert('Please enter a valid name and salary.'); return; }
+  emp.name = name.trim();
+  emp.role = (role || '').trim();
+  emp.mobile = (mobile || '').trim();
+  emp.address = (address || '').trim();
+  emp.joiningDate = (joiningDate || '').trim();
+  emp.location = LOCS.includes(loc) ? loc : emp.location;
+  emp.salary = salary;
+  await saveEmp();
+  render();
+  toast('Employee updated');
+}
+
+async function editPayment(id){
+  const p = DB.payments.find(pay=>pay.id===id); if(!p) return;
+  const amount = parseFloat(prompt('Payment amount', p.amount));
+  if(!amount || amount<=0){ alert('Please enter a valid amount.'); return; }
+  const type = prompt(`Payment type (${PTYPES.join(', ')})`, p.type) ?? p.type;
+  const date = prompt('Payment date (YYYY-MM-DD)', p.date || todayISO()) ?? p.date;
+  const note = prompt('Note', p.note || '') ?? p.note;
+  p.amount = amount;
+  p.type = PTYPES.includes(type) ? type : p.type;
+  p.date = date;
+  p.month = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date.slice(0,7) : p.month;
+  p.note = (note || '').trim();
+  await savePay();
+  if(p.month !== S.month) S.month = p.month;
+  render();
+  toast('Payment updated');
+}
+
+function fillRemaining(){
+  const emp = DB.employees.find(e=>e.id===S.selEmp); if(!emp) return;
+  const sum = empSummary(emp.id,S.month);
+  $('p-amt').value = sum.remaining || emp.salary;
+  $('p-type').value = sum.remaining >= emp.salary ? 'Full Salary' : 'Partial';
+}
+
+async function recordFullSalary(){
+  const emp = DB.employees.find(e=>e.id===S.selEmp); if(!emp) return;
+  const sum = empSummary(emp.id,S.month);
+  if(sum.remaining<=0){ toast('Already fully paid'); return; }
+  DB.payments.push({id:uid(),employeeId:S.selEmp,amount:sum.remaining,type:sum.totalPaid>0?'Partial':'Full Salary',date:todayISO(),month:S.month,note:'Full balance'});
+  await savePay();
+  render();
+  toast('Full salary recorded');
+}
+
+async function recordPayment(){
+  const amt=parseFloat(($('p-amt')||{}).value);
+  const type=($('p-type')||{}).value;
+  const date=($('p-date')||{}).value;
+  const note=($('p-note')||{}).value?.trim();
+  if(!S.selEmp||!amt||amt<=0){ alert('Please select an employee and enter a valid amount.'); return; }
+  DB.payments.push({id:uid(),employeeId:S.selEmp,amount:amt,type,date,month:S.month,note:note||''});
+  await savePay();
+  render();
+  toast('Payment recorded');
+}
+
+function monthlyRows(){
+  return DB.employees.map(e=>{
+    const sum = empSummary(e.id,S.month);
+    return {
+      Month: fmtMonth(S.month),
+      Name: e.name,
+      Role: e.role || '',
+      Mobile: e.mobile || '',
+      Address: e.address || '',
+      JoiningDate: e.joiningDate || '',
+      Location: e.location,
+      MonthlySalary: e.salary,
+      Paid: sum.totalPaid,
+      PaidThisMonth: sum.paidThisMonth,
+      AdvanceApplied: sum.advanceApplied,
+      AdvanceToNextMonth: sum.advanceToNext,
+      Remaining: sum.remaining,
+      Status: sum.status,
+      PaymentCount: sum.ps.length,
+      PaymentDates: sum.ps.map(p=>p.date).join(' | '),
+      Notes: sum.ps.map(p=>p.note).filter(Boolean).join(' | ')
+    };
+  });
+}
+
+function csvEscape(v){ return `"${String(v ?? '').replace(/"/g,'""')}"`; }
+function monthlyCSV(){
+  const rows = monthlyRows();
+  const headers = ['Month','Name','Role','Mobile','Address','JoiningDate','Location','MonthlySalary','Paid','PaidThisMonth','AdvanceApplied','AdvanceToNextMonth','Remaining','Status','PaymentCount','PaymentDates','Notes'];
+  return [headers.join(','), ...rows.map(r=>headers.map(h=>csvEscape(r[h])).join(','))].join('\n');
+}
+function monthlyTSV(){
+  const rows = monthlyRows();
+  const headers = ['Month','Name','Role','Mobile','Address','Joining Date','Location','Monthly Salary','Paid / Deducted','Paid This Month','Advance Applied','Advance To Next Month','Remaining','Status','Payment Count','Payment Dates','Notes'];
+  const keys = ['Month','Name','Role','Mobile','Address','JoiningDate','Location','MonthlySalary','Paid','PaidThisMonth','AdvanceApplied','AdvanceToNextMonth','Remaining','Status','PaymentCount','PaymentDates','Notes'];
+  return [headers.join('\t'), ...rows.map(r=>keys.map(k=>String(r[k] ?? '').replace(/\t/g,' ').replace(/\n/g,' ')).join('\t'))].join('\n');
+}
+
+function downloadText(filename, text, type){
+  const blob = new Blob([text], {type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+function downloadMonthlyCSV(){ downloadText(`bizeal-salary-${S.month}.csv`, monthlyCSV(), 'text/csv;charset=utf-8'); toast('CSV downloaded'); }
+async function copyMonthlyCSV(){
+  try{ await navigator.clipboard.writeText(monthlyTSV()); toast('Sheet data copied'); }
+  catch(e){ downloadMonthlyCSV(); }
+}
+async function openGoogleSheetWithData(){
+  try{
+    await navigator.clipboard.writeText(monthlyTSV());
+    window.open('https://docs.google.com/spreadsheets/u/0/create','_blank');
+    toast('Data copied. Paste in A1.');
+  }catch(e){
+    downloadMonthlyCSV();
+    window.open('https://docs.google.com/spreadsheets/u/0/create','_blank');
+  }
+}
+function downloadBackup(){
+  const payload = { app:'Bizeal Salary Tracker', version:2, exportedAt:new Date().toISOString(), employees:DB.employees, payments:DB.payments };
+  downloadText(`bizeal-salary-backup-${todayISO()}.json`, JSON.stringify(payload,null,2), 'application/json');
+  toast('Backup downloaded');
+}
+async function importBackup(file){
+  if(!file) return;
+  try{
+    const data = JSON.parse(await file.text());
+    if(!Array.isArray(data.employees) || !Array.isArray(data.payments)) throw new Error('Invalid backup');
+    DB.employees = data.employees;
+    DB.payments = data.payments;
+    await saveAll();
+    render();
+    toast('Backup imported');
+  }catch(e){ alert('Could not import this backup file.'); }
+}
+async function clearAllData(){
+  if(!confirm('Clear all local employees and payments?')) return;
+  DB = { employees: [], payments: [] };
+  await saveAll();
+  render();
+  toast('Local data cleared');
+}
+function toast(msg){
+  const old = document.querySelector('.toast'); if(old) old.remove();
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1800);
+}
+
+load();
+</script>
+</body>
+</html>
